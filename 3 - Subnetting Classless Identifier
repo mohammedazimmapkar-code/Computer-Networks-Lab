@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int o1, o2, o3, o4, cidr;
+
+    printf("Enter base IP address: ");
+    if (scanf("%d.%d.%d.%d", &o1, &o2, &o3, &o4) != 4) {
+        printf("Error: Invalid IP format.\n");
+        return 1;
+    }
+
+    printf("Enter CIDR prefix: /");
+    if (scanf("%d", &cidr) != 1) {
+        printf("Error: Invalid CIDR input.\n");
+        return 1;
+    }
+
+    if (cidr < 24 || cidr > 30) {
+        printf("Error: This program currently supports Class C subnetting (CIDR 24 to 30).\n");
+        return 1;
+    }
+
+    int hostBits = 32 - cidr;
+    int blockSize = 1 << hostBits;
+    int subnets = 256 / blockSize;
+    int usableHosts = blockSize - 2;
+    int lastOctetMask = 256 - blockSize;
+
+    printf("--- General Subnet Information ---\n");
+    printf("Calculated Subnet Mask : 255.255.255.%d\n", lastOctetMask);
+    printf("Total Usable Hosts     : %d per subnet\n", usableHosts);
+    printf("Total Subnets Created  : %d\n", subnets);
+
+    for (int i = 0; i < subnets; i++) {
+        int networkOctet = o4 + (i * blockSize);
+        int broadcastOctet = networkOctet + blockSize - 1;
+        int firstHostOctet = networkOctet + 1;
+        int lastHostOctet = broadcastOctet - 1;
+
+        printf("\nSubnet %d\n", i + 1);
+        printf("Network Address   : %d.%d.%d.%d\n", o1, o2, o3, networkOctet);
+        printf("First Host        : %d.%d.%d.%d\n", o1, o2, o3, firstHostOctet);
+        printf("Last Host         : %d.%d.%d.%d\n", o1, o2, o3, lastHostOctet);
+        printf("Broadcast Address : %d.%d.%d.%d\n", o1, o2, o3, broadcastOctet);
+    }
+
+    return 0;
+}
