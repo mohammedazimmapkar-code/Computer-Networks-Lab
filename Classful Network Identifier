@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <string.h>
+
+void analyze_ip(const char* ip_address) {
+    int octet1, octet2, octet3, octet4;
+    
+    if (sscanf(ip_address, "%d.%d.%d.%d", &octet1, &octet2, &octet3, &octet4) != 4) {
+        printf("Invalid IP address format.\n");
+        return;
+    }
+
+    char subnet_class[30] = "Unknown";
+    char octet_range[30] = "N/A";
+    char binary_range[30] = "N/A";
+    char subnet_mask[20] = "N/A";
+    char ip_range[40] = "N/A";
+    char hosts_per_network[30] = "N/A";
+    char no_of_networks[20] = "N/A";
+    char subnet[20] = "N/A";
+
+    if (octet1 >= 0 && octet1 <= 127) {
+        strcpy(subnet_class, "Class A");
+        strcpy(octet_range, "0 - 127");
+        strcpy(binary_range, "0XXXXXXX");
+        strcpy(subnet_mask, "255.0.0.0");
+        strcpy(ip_range, "0.0.0.0 - 127.255.255.255");
+        strcpy(hosts_per_network, "2^24 - 2 (16,777,214)");
+        strcpy(no_of_networks, "2^7 (128)");
+        sprintf(subnet, "%d.0.0.0", octet1);
+    } 
+    else if (octet1 >= 128 && octet1 <= 191) {
+        strcpy(subnet_class, "Class B");
+        strcpy(octet_range, "128 - 191");
+        strcpy(binary_range, "10XXXXXX");
+        strcpy(subnet_mask, "255.255.0.0");
+        strcpy(ip_range, "128.0.0.0 - 191.255.255.255");
+        strcpy(hosts_per_network, "2^16 - 2 (65,534)");
+        strcpy(no_of_networks, "2^14 (16,384)");
+        sprintf(subnet, "%d.%d.0.0", octet1, octet2);
+    } 
+    else if (octet1 >= 192 && octet1 <= 223) {
+        strcpy(subnet_class, "Class C");
+        strcpy(octet_range, "192 - 223");
+        strcpy(binary_range, "110XXXXX");
+        strcpy(subnet_mask, "255.255.255.0");
+        strcpy(ip_range, "192.0.0.0 - 223.255.255.255");
+        strcpy(hosts_per_network, "2^8 - 2 (254)");
+        strcpy(no_of_networks, "2^21 (2,097,152)");
+        sprintf(subnet, "%d.%d.%d.0", octet1, octet2, octet3);
+    }
+    else if (octet1 >= 224 && octet1 <= 239) {
+        strcpy(subnet_class, "Class D (Multicast)");
+        strcpy(octet_range, "224 - 239");
+        strcpy(binary_range, "1110XXXX");
+        strcpy(ip_range, "224.0.0.0 - 239.255.255.255");
+    }
+    else if (octet1 >= 240 && octet1 <= 255) {
+        strcpy(subnet_class, "Class E (Experimental)");
+        strcpy(octet_range, "240 - 255");
+        strcpy(binary_range, "1111XXXX");
+        strcpy(ip_range, "240.0.0.0 - 255.255.255.255");
+    }
+
+    printf("\n--- CLASS TABLE PROPERTIES ---\n");
+    printf("Class: %s\n", subnet_class);
+    printf("First Octet decimal (range): %s\n", octet_range);
+    printf("First Octet binary (range): %s\n", binary_range);
+    printf("IP range: %s\n", ip_range);
+    printf("Subnet Mask: %s\n", subnet_mask);
+    printf("Hosts per Network ID: %s\n", hosts_per_network);
+    printf("# of networks: %s\n", no_of_networks);
+
+    if (octet1 <= 223) {
+        printf("\n--- SPECIFIC NETWORK DETAILS ---\n");
+        printf("1. Subnet: %s\n", subnet);
+        printf("2. Subnet Mask: %s\n", subnet_mask);
+        printf("3. Loopback Address: 127.0.0.1\n");
+        printf("4. Scanned IP %s belongs to: %s\n", ip_address, subnet_class);
+        printf("5. IP Range: %s\n", ip_range);
+        printf("6. Subnet Class Confirmation: %s\n", subnet_class);
+        printf("7. Hosts per Network ID: %s\n", hosts_per_network);
+        printf("8. Number of Networks: %s\n", no_of_networks);
+    } else {
+        printf("\n(Specific subnet details are not strictly applicable for Class D/E)\n");
+    }
+}
+
+int main() {
+    char ip_input[20];
+
+    printf("Enter an IP address: ");
+    if (scanf("%19s", ip_input) == 1) {
+        analyze_ip(ip_input);
+    } else {
+        printf("Error reading input.\n");
+    }
+    
+    return 0;
+}
