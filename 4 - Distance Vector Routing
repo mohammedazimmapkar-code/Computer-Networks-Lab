@@ -1,0 +1,66 @@
+#include <stdio.stdio.h>
+#include <stdio.h>
+
+int main() {
+    int n = 4;
+    int inf = 999;
+
+    int cost[4][4];
+    int dist[4][4];
+    int nextHop[4][4];
+
+    printf("Enter enter values of matrix-\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            dist[i][j] = cost[i][j];
+
+            if (i == j) {
+                nextHop[i][j] = i;
+            } else if (cost[i][j] != inf) {
+                nextHop[i][j] = j;
+            } else {
+                nextHop[i][j] = -1;
+            }
+        }
+    }
+
+    while (1) {
+        int updated = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (dist[i][k] != inf && dist[k][j] != inf && dist[i][j] > dist[i][k] + dist[k][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                        nextHop[i][j] = nextHop[i][k];
+                        updated = 1;
+                    }
+                }
+            }
+        }
+        if (updated == 0) {
+            break;
+        }
+    }
+
+    char routers[] = {'A', 'B', 'C', 'D'};
+    for (int i = 0; i < n; i++) {
+        printf("\nRouting table for Router %c\n", routers[i]);
+        printf("Destination\tCost\tNext Hop\n");
+
+        for (int j = 0; j < n; j++) {
+            if (nextHop[i][j] != -1) {
+                printf("%c\t\t%d\t%c\n", routers[j], dist[i][j], routers[nextHop[i][j]]);
+            } else {
+                printf("%c\t\t%d\t-\n", routers[j], dist[i][j]);
+            }
+        }
+    }
+
+    return 0;
+}
